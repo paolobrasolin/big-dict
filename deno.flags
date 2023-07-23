@@ -1,2 +1,2 @@
---allow-net=dizionario.internazionale.it
+--allow-net=dizionario.internazionale.it,www.treccani.it,thingproxy.freeboard.io
 --unsafely-ignore-certificate-errors=dizionario.internazionale.it

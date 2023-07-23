@@ -1,5 +1,6 @@
 import Denomander from "https://deno.land/x/denomander/mod.ts";
 import { demauro } from "./lib/demauro.ts";
+import { treccani } from "./lib/treccani.ts";
 
 // Learn more at https://deno.land/manual/examples/module_metadata#concepts
 if (import.meta.main) {
@@ -12,7 +13,10 @@ if (import.meta.main) {
   program
     .command("query [expression]", "Start a query")
     .action(async ({ expression }: { expression: string }) => {
-      const results = await demauro(expression);
+      const results = (await Promise.all([
+        demauro(expression),
+        treccani(expression),
+      ])).flat();
       console.log(JSON.stringify(results, null, 2));
     })
     .option("-p --poly", "Include polyrhematic results")
