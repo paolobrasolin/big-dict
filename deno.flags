@@ -1,0 +1,2 @@
+--allow-net=dizionario.internazionale.it
+--unsafely-ignore-certificate-errors=dizionario.internazionale.it

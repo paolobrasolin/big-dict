@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run --allow-net=dizionario.internazionale.it --unsafely-ignore-certificate-errors=dizionario.internazionale.it --watch main.ts",
-    "build": "deno compile --allow-net=dizionario.internazionale.it --unsafely-ignore-certificate-errors=dizionario.internazionale.it main.ts"
+    "dev": "deno run $(cat deno.flags) --watch main.ts",
+    "build": "deno compile $(cat deno.flags) main.ts"
   }
 }
