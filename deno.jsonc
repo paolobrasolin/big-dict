@@ -1,7 +1,7 @@
 {
   "tasks": {
     "run": "deno run $(cat deno.flags) main.ts",
-    "dev": "deno run $(cat deno.flags) --watch main.ts",
+    "dev": "deno run $(cat deno.flags) --watch dev.ts",
     "build": "deno compile $(cat deno.flags) main.ts"
   }
 }
