@@ -30,10 +30,14 @@ jobs:
         env:
           BASE_NAME: big-dict-${{ steps.labeller.outputs.version }}
         run: |
-          deno task build --output=${{ env.BASE_NAME }}-x86_64-lnx --target=x86_64-unknown-linux-gnu
-          deno task build --output=${{ env.BASE_NAME }}-x86_64-win --target=x86_64-pc-windows-msvc
-          deno task build --output=${{ env.BASE_NAME }}-x86_64-osx --target=x86_64-apple-darwin
-          deno task build --output=${{ env.BASE_NAME }}-arm_64-osx --target=aarch64-apple-darwin
+          deno task build --target=x86_64-unknown-linux-gnu
+          tar --remove-files -czpf ${{ env.BASE_NAME }}-x86_64-lnx big-dict
+          deno task build --target=x86_64-apple-darwin
+          tar --remove-files -czpf ${{ env.BASE_NAME }}-x86_64-osx big-dict
+          deno task build --target=aarch64-apple-darwin
+          tar --remove-files -czpf ${{ env.BASE_NAME }}-x86_64-osx big-dict
+          deno task build --target=x86_64-pc-windows-msvc
+          zip -m9 ${{ env.BASE_NAME }}-x86_64-win big-dict.exe
       - name: "GitHub: update pre-release"
         if: startsWith(github.ref, 'refs/heads/')
         uses: docker://antonyurchenko/git-release:v5
