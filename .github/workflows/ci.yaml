@@ -35,7 +35,7 @@ jobs:
           deno task build --target=x86_64-apple-darwin
           tar --remove-files -czpf ${{ env.BASE_NAME }}-x86_64-osx big-dict
           deno task build --target=aarch64-apple-darwin
-          tar --remove-files -czpf ${{ env.BASE_NAME }}-x86_64-osx big-dict
+          tar --remove-files -czpf ${{ env.BASE_NAME }}-arm_64-osx big-dict
           deno task build --target=x86_64-pc-windows-msvc
           zip -m9 ${{ env.BASE_NAME }}-x86_64-win big-dict.exe
       - name: "GitHub: update pre-release"
