@@ -1,5 +1,13 @@
-import { load } from "npm:cheerio";
+import { CheerioAPI, load } from "npm:cheerio";
 import { Attestation, Result } from "./base.ts";
+
+async function fromURL(url: string) {
+  const response = await fetch(
+    new URL("https://thingproxy.freeboard.io/fetch/" + url),
+  );
+  const text = await response.text();
+  return await load(text);
+}
 
 async function treccaniScrape(url: URL): Promise<Result> {
   // NOTE: see https://github.com/denoland/deno/issues/6427
@@ -39,18 +47,61 @@ async function treccaniScrape(url: URL): Promise<Result> {
   };
 }
 
-async function treccaniSearch(query: string, poly = false): Promise<URL[]> {
-  const q = query.replace(" ", "-");
-  return [
-    new URL(`https://www.treccani.it/vocabolario/${q}_%28Neologismi%29/`),
-    new URL(`https://www.treccani.it/enciclopedia/${q}_%28altro%29/`),
-  ];
+function extractCandidates($: CheerioAPI) {
+  return $(".search_preview-title a")
+    .map((_, el) => {
+      const link = $(el);
+      return {
+        text: link.text().trim(),
+        path: link.attr("href") as string,
+      };
+    })
+    .toArray();
 }
 
-export async function treccani(query: string, poly = false): Promise<Result[]> {
+async function fetchRelated($: CheerioAPI) {
+  return await Promise.all(
+    $(".module-search-preview-more_results a.results-toggle")
+      .map((_, el) => $(el).data("url") as string).toArray()
+      .map((path) => `https://www.treccani.it${path}`)
+      .map((url) => fromURL(url)),
+  );
+}
+
+async function search(query: string, baseUrl: string): Promise<URL[]> {
+  const q = query.replace(" ", "-");
+
+  const searchResults: URL[] = [];
+  let page = 1;
+  while (true) {
+    const source = `${baseUrl}/${q}/${page}/`;
+    const $ = await fromURL(source);
+
+    const pageResults = extractCandidates($)
+      .concat(...(await fetchRelated($)).flatMap(extractCandidates))
+      .filter(({ text }) => text.toLowerCase() == query.toLowerCase())
+      .map(({ path }) => new URL(`https://www.treccani.it${path}`));
+
+    searchResults.push(...pageResults);
+
+    if (pageResults.length == 0) break;
+    page += 1;
+  }
+
+  return searchResults;
+}
+
+export async function treccani(query: string): Promise<Result[]> {
   try {
-    console.log("3CNI | searching...");
-    const resultsUrls = await treccaniSearch(query);
+    const resultsUrls: URL[] = [];
+    console.log("3CNI | searching enciclopedia...");
+    resultsUrls.push(
+      ...await search(query, "https://www.treccani.it/enciclopedia/ricerca"),
+    );
+    console.log("3CNI | searching vocabolario...");
+    resultsUrls.push(
+      ...await search(query, "https://www.treccani.it/vocabolario/ricerca"),
+    );
     console.log(`3CNI | found ${resultsUrls.length} results.`);
     console.log("3CNI | scraping...");
     const results = await Promise.all(resultsUrls.map(treccaniScrape));
