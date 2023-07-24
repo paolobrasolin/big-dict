@@ -50,7 +50,10 @@ async function searchGdli(query: string): Promise<GdliMatch[]> {
     const $ = await load(html);
 
     const pageResults = $("#risultati p.text-right")
-      .map((_, el): GdliMatch => {
+      .filter((_, el) =>
+        $(el).prev("p").find(".highligth")
+          .text().trim().toLowerCase() == query.toLowerCase()
+      ).map((_, el): GdliMatch => {
         const ext = $(el).find("button[data-doc][data-pos]");
         const src = $(el).find("a[href^=/sala-lettura]");
         return {
