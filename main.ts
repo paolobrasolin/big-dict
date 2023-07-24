@@ -5,6 +5,7 @@ import cliFormatDeno from "https://deno.land/x/cli_format_deno@3.0.10/src/mod.ts
 import { demauro } from "./lib/demauro.ts";
 import { treccani } from "./lib/treccani.ts";
 import { onli } from "./lib/onli.ts";
+import { gdli } from "./lib/gdli.ts";
 
 // Learn more at https://deno.land/manual/examples/module_metadata#concepts
 if (import.meta.main) {
@@ -28,6 +29,7 @@ if (import.meta.main) {
         demauro(expression),
         treccani(expression),
         onli(expression),
+        gdli(expression),
       ])).flat();
 
       switch (program.format) {
