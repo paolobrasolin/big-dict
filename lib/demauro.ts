@@ -54,7 +54,18 @@ async function demauroSearch(query: string, poly = false): Promise<URL[]> {
     .toArray();
 }
 
-export async function demauro(query: string, poly = false) {
-  const resultUrls = await demauroSearch(query, poly);
-  return await Promise.all(resultUrls.map(demauroScrape));
+export async function demauro(query: string, poly = false): Promise<Result[]> {
+  try {
+    console.log("DMAU | searching...");
+    const resultsUrls = await demauroSearch(query, poly);
+    console.log(`DMAU | found ${resultsUrls.length} results.`);
+    console.log("DMAU | scraping...");
+    const results = await Promise.all(resultsUrls.map(demauroScrape));
+    console.log("DMAU | success!");
+    return results;
+  } catch (e) {
+    console.log(`DMAU | ${e}`);
+    console.log("DMAU | failed!");
+    return [];
+  }
 }

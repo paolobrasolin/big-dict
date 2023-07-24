@@ -65,7 +65,18 @@ async function searchOnli(query: string): Promise<URL[]> {
   return searchResults;
 }
 
-export async function onli(query: string) {
-  const resultUrls = await searchOnli(query);
-  return await Promise.all(resultUrls.map(scrapeOnli));
+export async function onli(query: string): Promise<Result[]> {
+  try {
+    console.log("ONLI | searching...");
+    const resultsUrls = await searchOnli(query);
+    console.log(`ONLI | found ${resultsUrls.length} results.`);
+    console.log("ONLI | scraping...");
+    const results = await Promise.all(resultsUrls.map(scrapeOnli));
+    console.log("ONLI | success!");
+    return results;
+  } catch (e) {
+    console.log(`ONLI | ${e}`);
+    console.log("ONLI | failed!");
+    return [];
+  }
 }

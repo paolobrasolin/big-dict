@@ -70,7 +70,18 @@ async function searchGdli(query: string): Promise<GdliMatch[]> {
   return searchResults;
 }
 
-export async function gdli(query: string) {
-  const resultUrls = await searchGdli(query);
-  return await Promise.all(resultUrls.map(scrapeGdli));
+export async function gdli(query: string): Promise<Result[]> {
+  try {
+    console.log("GDLI | searching...");
+    const resultsUrls = await searchGdli(query);
+    console.log(`GDLI | found ${resultsUrls.length} results.`);
+    console.log("GDLI | scraping...");
+    const results = await Promise.all(resultsUrls.map(scrapeGdli));
+    console.log("GDLI | success!");
+    return results;
+  } catch (e) {
+    console.log(`GDLI | ${e}`);
+    console.log("GDLI | failed!");
+    return [];
+  }
 }

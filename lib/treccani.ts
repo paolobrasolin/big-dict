@@ -47,7 +47,18 @@ async function treccaniSearch(query: string, poly = false): Promise<URL[]> {
   ];
 }
 
-export async function treccani(query: string, poly = false) {
-  const resultUrls = await treccaniSearch(query, poly);
-  return await Promise.all(resultUrls.map(treccaniScrape));
+export async function treccani(query: string, poly = false): Promise<Result[]> {
+  try {
+    console.log("3CNI | searching...");
+    const resultsUrls = await treccaniSearch(query);
+    console.log(`3CNI | found ${resultsUrls.length} results.`);
+    console.log("3CNI | scraping...");
+    const results = await Promise.all(resultsUrls.map(treccaniScrape));
+    console.log("3CNI | success!");
+    return results;
+  } catch (e) {
+    console.log(`3CNI | ${e}`);
+    console.log("3CNI | failed!");
+    return [];
+  }
 }
