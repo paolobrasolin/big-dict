@@ -42,7 +42,7 @@ if (import.meta.main) {
             console.log(Colors.dim(`SourceUrl: ${result.source.toString()}`));
             console.log(Colors.dim(`Published: ${result.published || "N/D"}`));
             const readable = result.fullText?.trim().replace(
-              /\b\d\d\d\d\b/g,
+              /\b\d{4}(-\d{2,4})?\b/g,
               (year) => Colors.red(Colors.bold(year)),
             );
             console.log(
